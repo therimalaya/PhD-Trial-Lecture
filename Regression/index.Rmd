@@ -1,0 +1,260 @@
+---
+title: "Playing with Simulation and Regression"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(rmarkdown)
+
+lm_eqn <- function(mdl){
+  cf <- unname(coef(mdl))
+  rsq <- summary(mdl)[["r.squared"]]
+  eq <- substitute(hat(y) == a + b %.% italic(x) * "," ~~ 
+                     italic(r)^2 ~ "=" ~ r2 * "," ~~ 
+                     italic(sigma) ~ "=" ~ s,
+                   list(a = format(cf[1], digits = 2),
+                        b = format(cf[2], digits = 2),
+                        r2 = format(rsq, digits = 3),
+                        s = format(sigma(mdl), digits = 3)
+                   ))
+  as.character(as.expression(eq))
+}
+```
+
+```{r}
+dta_real <- read.csv("car.csv")
+```
+
+```{r true-data}
+mdl_real <- lm(Price ~ Mileage, data = dta_real)
+dta_real <- dta_real %>% mutate(fitted = fitted(mdl_real))
+plt_real <- ggplot(dta_real, aes(Mileage, Price)) +
+  geom_segment(aes(yend = fitted, xend = Mileage), size = 0.25,
+               linetype = "dashed", color = "red1") +
+  geom_point(shape = 21, fill = "lightgrey", size = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, color = "darkgrey") +
+  geom_point(aes(y = fitted), shape = 4, size = 0.5) +
+  annotate(x = Inf, y = Inf, label = lm_eqn(mdl_real), geom = "text",
+           hjust = 1, vjust = 1, parse = TRUE) +
+  labs(x = "Mileage (In thousands of miles)", y = "Price (In thousands of dollars)") +
+  ggtitle("Real dataset of used car price in 2007 from cars.com",
+          subtitle = as.expression(bquote(atop(
+            "From dataset: "~
+              n == .(nrow(dta_real))~", "~
+              beta[0] == .(round(coef(mdl_real)[1], 2))~", "~
+              beta[1] == .(round(coef(mdl_real)[2], 2))~", "~ 
+              sigma == .(round(sigma(mdl_real), 2))~", "~
+              mu[x] == .(round(mean(dta_real$Mileage), 2))~", "~
+              sigma[x] == .(round(sd(dta_real$Mileage), 2))
+          )))) + 
+  coord_cartesian(xlim = c(0, 150), ylim = c(0, 40))
+```
+```{r true-model}
+sigma <- sigma(mdl_real) # Variation in price in general
+mu_x <- round(mean(dta_real$Mileage)) # Average Mileage
+sigma_x <- round(sd(dta_real$Mileage), 2) # Mileage Variation
+beta0 <- coef(mdl_real)[1]
+beta1 <- coef(mdl_real)[2]
+```
+
+
+
+Column {.sidebar data-width=400}
+-----------------------------------------------------------------------
+### Ordinary Least Square
+```{r}
+sliderInput("nobs", label = "Number of Observations:",
+            min = 0, max = 200, value = nrow(dta_real), step = 1)
+sliderInput("beta0", label = "True Intercept:",
+            min = 18, max = 27, value = 20, step = 0.1,)
+sliderInput("beta", label = "True Slope:",
+            min = -1, max = 1, value = 0, step = 0.005)
+checkboxInput("show_leastsq", label = "Least Square Solution", value = FALSE)
+checkboxInput("show_true", label = "True Population Model", value = FALSE)
+checkboxInput("show_error", label = "Show Errors", value = FALSE)
+```
+```{r}
+sim_obj <- reactive({
+  set.seed(123)
+  nobs <- input$nobs
+  mileage <- abs(rnorm(nobs, mu_x, sigma_x))
+  price <- beta0 + beta1 * mileage + rnorm(nobs, 0, sigma)
+  mdl_sim <- lm(price ~ mileage)
+  df_sim = tibble(
+    cars = 1:nobs,
+    mileage = mileage,
+    price = price,
+    fitted = input$beta0 + input$beta * mileage
+  )
+  reactiveValues(
+    nobs = nobs, mileage = mileage,
+    price = price, mdl_sim = mdl_sim,
+    df_sim = df_sim
+  )
+})
+```
+
+```{r beta-space}
+set.seed(123)
+beta_space <- MASS::mvrnorm(n = 100, mu = c(beta0, beta1), Sigma = diag(c(0.6093, 0.0087)))
+colnames(beta_space) <- c("beta0", "beta1")
+beta_space <- as_tibble(beta_space)
+```
+
+```{r}
+renderPlot({
+  ls_error <- sigma(sim_obj()[["mdl_sim"]])
+  my_error <- with(sim_obj()[["df_sim"]], sqrt(mean((price - fitted)^2)))
+  err_plt <- ggplot(beta_space, aes(beta0, beta1)) +
+    stat_density_2d(aes(fill = stat(density)), geom = "raster", contour = FALSE) +
+    scale_fill_viridis_c(option = "D", begin = 0.3) +
+    labs(x = as.expression(bquote("Intercept("~beta[0]~")")), 
+         y = as.expression(bquote("Slope("~beta[1]~")")),
+         title = "Regression Coefficeint Space",
+         subtitle = "With Model Standard Deviation") +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    geom_point(x = input[['beta0']], y = input[['beta']], color = "whitesmoke") +
+    geom_segment(x = input[['beta0']], 
+                 y = input[['beta']], 
+                 xend = input[['beta0']], 
+                 yend = min(beta_space$beta1),
+                 size = 0.5, color = "whitesmoke", linetype = "dashed") +
+    geom_segment(x = input[['beta0']], 
+                 y = input[['beta']], 
+                 xend = min(beta_space$beta0), 
+                 yend = input[['beta']],
+                 size = 0.5, color = "whitesmoke", linetype = "dashed") +
+    annotate("text", x = input[['beta0']], y = input[['beta']], 
+             color = "whitesmoke", hjust = -0.1,
+             label = paste0("My Error: ", round(my_error, 3))) +
+    theme(legend.position = "none") +
+    coord_fixed(ratio = 7, xlim = range(beta_space$beta0), ylim = range(beta_space$beta1))
+  if (input[['show_true']]) {
+    err_plt <- err_plt +
+    geom_point(x = beta0, y = beta1, color = "forestgreen") +
+    geom_segment(x = beta0, y = beta1, xend = beta0, yend = min(beta_space$beta1),
+                 size = 0.5, color = "forestgreen", linetype = "dashed") +
+    geom_segment(x = beta0, y = beta1, xend = min(beta_space$beta1), yend = beta1,
+                 size = 0.5, color = "forestgreen", linetype = "dashed") +
+    annotate("text", x = beta0, y = beta1, color = "forestgreen", hjust = -0.1,
+             label = paste0("True Error: ", round(sigma, 3)))
+  }
+  if (input[['show_leastsq']]) {
+    err_plt <- err_plt +
+    geom_point(x = beta0, y = beta1, color = "firebrick") +
+    geom_segment(x = beta0, y = beta1, xend = beta0, yend = min(beta_space$beta1),
+                 size = 0.5, color = "firebrick", linetype = "dashed") +
+    geom_segment(x = beta0, y = beta1, xend = min(beta_space$beta1), yend = beta1,
+                 size = 0.5, color = "firebrick", linetype = "dashed") +
+    annotate("text", x = beta0, y = beta1, color = "firebrick", hjust = -0.1,
+             label = paste0("LS Error: ", round(ls_error, 3)))
+  }
+  plot(err_plt)
+})
+```
+
+
+
+Row
+-----------------------------------------------------------------------
+### Regression Analysis with True Data
+```{r}
+renderPlot(plt_real)
+```
+
+
+### Regression Analysis with Simulated Data
+
+```{r}
+renderPlot({
+  set.seed(123)
+  nobs <- sim_obj()[['nobs']]
+  mileage <- sim_obj()[['mileage']]
+  price <- sim_obj()[['price']]
+  mdl_sim <- sim_obj()[['mdl_sim']]
+  df_sim <- sim_obj()[['df_sim']]
+  plt_sim <- ggplot(df_sim, aes(mileage, price)) +
+    geom_abline(slope = input[['beta']], 
+                intercept = input[['beta0']], 
+                color = "royalblue", linetype = "dashed") +
+    geom_point(shape = 21, fill = "lightgrey", size = 0.8) +
+    labs(x = "Mileage (In thousands of miles)", y = "Price (In thousands of dollars)") +
+    ggtitle("Simulated data with controlled regression coefficients and model variance",
+            subtitle = as.expression(bquote(
+              "Controlled values: "~
+                n == .(nobs)~", "~
+                beta[0] == .(round(beta0, 2))~", "~
+                beta[1] == .(round(beta1, 2))~", "~
+                sigma == .(round(sigma, 2))~", "~
+                mu[x] == .(round(sigma, 2))~", "~
+                sigma[x] == .(round(sigma_x, 2))
+            ))) +
+    coord_cartesian(xlim = c(0, 150), ylim = c(0, 40))
+  if (input[['show_leastsq']]) {
+    plt_sim <- plt_sim +
+      geom_abline(slope = coef(mdl_sim)[2], 
+                  intercept = coef(mdl_sim)[1], 
+                  color = "firebrick", size = 0.5) +
+      annotate(x = Inf, y = Inf, label = lm_eqn(mdl_sim), geom = "text",
+               hjust = 1, vjust = 1, parse = TRUE)
+  }
+  if (input[['show_true']]) {
+    plt_sim <- plt_sim +
+      geom_abline(slope = beta1, 
+                  intercept = beta0, 
+                  color = "forestgreen", 
+                  linetype = "dashed")
+  }
+  if (input[['show_error']]) {
+    plt_sim <- plt_sim + geom_point(aes(y = fitted), shape = 4, size = 0.5) +
+      geom_segment(aes(yend = fitted, xend = mileage), size = 0.25,
+                   linetype = "dashed", color = "royalblue")
+  }
+  plot(plt_sim)
+})
+```
+
+Column {.tabset}
+-----------------------------------------------
+
+### The Model
+
+$$\mathbf{y} = \beta_0 + \beta_1\mathbf{x} + \varepsilon, \varepsilon \sim \textsf{N}(0, \sigma^2)$$
+
+```{r}
+renderUI({
+  withMathJax(
+    paste0("Your regression line:"),
+    paste0(
+      "$$\\hat{y} = ", input$beta0, " + ", input$beta, "x$$"
+    ),
+    ifelse(input$show_leastsq, paste(
+      paste0("Regression line from a Fitted least square:"),
+      paste0(
+        "$$\\hat{y} = ", round(coef(sim_obj()[['mdl_sim']])[1], 2), 
+        " + ", round(coef(sim_obj()[['mdl_sim']])[2], 2), "x$$"
+      )), ""),
+    ifelse(input$show_true, paste(
+      paste0("True model:"),
+      paste0(
+        "$$\\textsf{E}(\\mathbf{y|x}) = ", round(beta0, 2), " + ", round(beta1, 2), "x$$"
+      )
+    ), "")
+  )
+})
+```
+
+### Solution from R
+```{r}
+renderPrint({
+  summary(sim_obj()[['mdl_sim']])
+})
+```
+

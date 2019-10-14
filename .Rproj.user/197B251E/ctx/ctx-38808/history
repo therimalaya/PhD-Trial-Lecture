@@ -1,0 +1,512 @@
+mapping = aes(color = "Proposal Distribution")) +
+scale_color_manual(values = c("forestgreen", "royalblue")) +
+labs(x = "Quantiles", y = "Densities", color = "Distribution") +
+theme(legend.position = c(0, 0.9),
+legend.justification = c(-0.1, 1))
+ggplot(data.frame(x = seq(-3, 3, length.out = 10)), aes(x = x)) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = target_mu, sd = target_sd),
+linetype = "dashed",
+xlim = c(-3, 3)),
+mapping = aes(color = "Target Distribution")) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = df_$y, sd = proposal_sd),
+xlim = c(-3, 3)),
+mapping = aes(color = "Proposal Distribution")) +
+scale_color_manual(values = c("forestgreen", "royalblue")) +
+labs(x = "Quantiles", y = "Densities", color = "Distribution") +
+theme(legend.position = c(0, 0.9),
+legend.justification = c(-0.1, 0.5))
+ggplot(data.frame(x = seq(-3, 3, length.out = 10)), aes(x = x)) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = target_mu, sd = target_sd),
+linetype = "dashed",
+xlim = c(-3, 3)),
+mapping = aes(color = "Target Distribution")) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = df_$y, sd = proposal_sd),
+xlim = c(-3, 3)),
+mapping = aes(color = "Current Proposal Distribution")) +
+scale_color_manual(values = c("forestgreen", "royalblue")) +
+labs(x = "Quantiles", y = "Densities", color = "Distribution") +
+theme(legend.position = c(0, 0.9),
+legend.justification = c(-0.1, 0.5))
+p1 <- ggplot(df[1:i, ], aes(x, y)) +
+geom_line(group = 1, size = 0.3) +
+labs(x = "Iteration", y = "Trace")
+p2 <- ggplot(df[1:i,], aes(y)) +
+stat_density(geom = "line", color = "forestgreen", adjust = 1.5) +
+stat_function(fun = "dnorm", args = list(mean = target_mu, sd = target_sd),
+xlim = c(-3, 3), color = "royalblue", linetype = "dashed") +
+labs(x = "Quantiles", y = "Densities")
+df_ <- df[i, ]
+p3 <- ggplot(data.frame(x = seq(-3, 3, length.out = 10)), aes(x = x)) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = target_mu, sd = target_sd),
+linetype = "dashed",
+xlim = c(-3, 3)),
+mapping = aes(color = "Target Distribution")) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = df_$y, sd = proposal_sd),
+xlim = c(-3, 3)),
+mapping = aes(color = "Current Proposal Distribution")) +
+scale_color_manual(values = c("forestgreen", "royalblue")) +
+labs(x = "Quantiles", y = "Densities", color = "Distribution") +
+theme(legend.position = c(0, 0.9),
+legend.justification = c(-0.1, 0.5))
+plt <- gridExtra::arrangeGrob(p1, p2, p3,
+layout_matrix = matrix(c(1, 1, 2, 3), 2, 2, byrow = TRUE))
+grid::grid.newpage()
+grid::grid.draw(plt)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-ggvis.R', echo=TRUE)
+system("ffmpeg -y -r 2 -i ~/Desktop/Test/MHplot%03d.png -c:v libx264 -r 30 -pix_fmt yuv420p ~/Desktop/Test/MHplot.mp4")
+system("ffmpeg -y -r 2 -i ~/Desktop/Test/MHplot%03d.png -c:v libx264 -r 30 -pix_fmt yuv420p ~/Desktop/Test/MHplot.mp4")
+df <- data.frame(x = 1:iter, y = xc_vec)
+png(filename = "~/Desktop/Test/MHplot%03d.png", res = 150, width = 900, height = 900, units = "px")
+for (i in 2:20) {
+p1 <- ggplot(df[1:i, ], aes(x, y)) +
+geom_line(group = 1, size = 0.3) +
+labs(x = "Iteration", y = "Trace")
+p2 <- ggplot(df[1:i,], aes(y)) +
+stat_density(geom = "line", color = "forestgreen", adjust = 1.5) +
+stat_function(fun = "dnorm", args = list(mean = target_mu, sd = target_sd),
+xlim = c(-3, 3), color = "royalblue", linetype = "dashed") +
+labs(x = "Quantiles", y = "Densities")
+df_ <- df[i, ]
+p3 <- ggplot(data.frame(x = seq(-3, 3, length.out = 10)), aes(x = x)) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = target_mu, sd = target_sd),
+linetype = "dashed",
+xlim = c(-3, 3)),
+mapping = aes(color = "Target Distribution")) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = df_$y, sd = proposal_sd),
+xlim = c(-3, 3)),
+mapping = aes(color = "Proposal Distribution")) +
+scale_color_manual(values = c("forestgreen", "royalblue")) +
+labs(x = "Quantiles", y = "Densities", color = "Distribution") +
+theme(legend.position = c(0, 0.9),
+legend.justification = c(-0.1, 0.5))
+plt <- gridExtra::arrangeGrob(p1, p2, p3,
+layout_matrix = matrix(c(1, 1, 2, 3), 2, 2, byrow = TRUE))
+grid::grid.newpage()
+grid::grid.draw(plt)
+}
+dev.off()
+system("ffmpeg -y -r 2 -i ~/Desktop/Test/MHplot%03d.png -c:v libx264 -r 30 -pix_fmt yuv420p ~/Desktop/Test/MHplot.mp4")
+# system("rm ~/Desktop/Test/*.png")
+df <- data.frame(x = 1:iter, y = xc_vec)
+png(filename = "~/Desktop/Test/MHplot%03d.png", res = 150, width = 900, height = 900, units = "px")
+for (i in 2:20) {
+p1 <- ggplot(df[1:i, ], aes(x, y)) +
+geom_line(group = 1, size = 0.3) +
+labs(x = "Iteration", y = "Trace")
+p2 <- ggplot(df[1:i,], aes(y)) +
+stat_density(geom = "line", color = "forestgreen") +
+stat_function(fun = "dnorm", args = list(mean = target_mu, sd = target_sd),
+xlim = c(-3, 3), color = "royalblue", linetype = "dashed") +
+labs(x = "Quantiles", y = "Densities")
+df_ <- df[i, ]
+p3 <- ggplot(data.frame(x = seq(-3, 3, length.out = 10)), aes(x = x)) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = target_mu, sd = target_sd),
+linetype = "dashed",
+xlim = c(-3, 3)),
+mapping = aes(color = "Target Distribution")) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = df_$y, sd = proposal_sd),
+xlim = c(-3, 3)),
+mapping = aes(color = "Proposal Distribution")) +
+scale_color_manual(values = c("forestgreen", "royalblue")) +
+labs(x = "Quantiles", y = "Densities", color = "Distribution") +
+theme(legend.position = c(0, 0.9),
+legend.justification = c(-0.1, 0.5))
+plt <- gridExtra::arrangeGrob(p1, p2, p3,
+layout_matrix = matrix(c(1, 1, 2, 3), 2, 2, byrow = TRUE))
+grid::grid.newpage()
+grid::grid.draw(plt)
+}
+dev.off()
+system("ffmpeg -y -r 2 -i ~/Desktop/Test/MHplot%03d.png -c:v libx264 -r 30 -pix_fmt yuv420p ~/Desktop/Test/MHplot.mp4")
+# system("rm ~/Desktop/Test/*.png")
+df <- data.frame(x = 1:iter, y = xc_vec)
+png(filename = "~/Desktop/Test/MHplot%03d.png", res = 150, width = 900, height = 900, units = "px")
+for (i in 2:20) {
+p1 <- ggplot(df[1:i, ], aes(x, y)) +
+geom_line(group = 1, size = 0.3) +
+labs(x = "Iteration", y = "Trace")
+p2 <- ggplot(df[1:i,], aes(y)) +
+stat_density(geom = "line", color = "forestgreen") +
+stat_function(fun = "dnorm", args = list(mean = target_mu, sd = target_sd),
+xlim = c(-3, 3), color = "royalblue", linetype = "dashed") +
+labs(x = "Quantiles", y = "Densities")
+df_ <- df[i, ]
+p3 <- ggplot(data.frame(x = seq(-3, 3, length.out = 10)), aes(x = x)) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = target_mu, sd = target_sd),
+linetype = "dashed",
+xlim = c(-3, 3)),
+mapping = aes(color = "Target Distribution")) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = df_$y, sd = proposal_sd),
+xlim = c(-3, 3)),
+mapping = aes(color = "Proposal Distribution")) +
+scale_color_manual(values = c("forestgreen", "royalblue")) +
+labs(x = "Quantiles", y = "Densities", color = "Distribution") +
+theme(legend.position = c(0, 0.9),
+legend.justification = c(-0.1, 0.5))
+plt <- gridExtra::arrangeGrob(p1, p2, p3,
+layout_matrix = matrix(c(1, 2, 3), 3, 1, byrow = TRUE))
+grid::grid.newpage()
+grid::grid.draw(plt)
+}
+dev.off()
+system("ffmpeg -y -r 2 -i ~/Desktop/Test/MHplot%03d.png -c:v libx264 -r 30 -pix_fmt yuv420p ~/Desktop/Test/MHplot.mp4")
+# system("rm ~/Desktop/Test/*.png")
+df <- data.frame(x = 1:iter, y = xc_vec)
+png(filename = "~/Desktop/Test/MHplot%03d.png", res = 150, width = 900, height = 900, units = "px")
+for (i in 2:20) {
+p1 <- ggplot(df[1:i, ], aes(x, y)) +
+geom_line(group = 1, size = 0.3) +
+labs(x = "Iteration", y = "Trace")
+p2 <- ggplot(df[1:i,], aes(y)) +
+stat_density(geom = "line", color = "forestgreen") +
+stat_function(fun = "dnorm", args = list(mean = target_mu, sd = target_sd),
+xlim = c(-3, 3), color = "royalblue", linetype = "dashed") +
+labs(x = NULL, y = "Densities")
+df_ <- df[i, ]
+p3 <- ggplot(data.frame(x = seq(-3, 3, length.out = 10)), aes(x = x)) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = target_mu, sd = target_sd),
+linetype = "dashed",
+xlim = c(-3, 3)),
+mapping = aes(color = "Target Distribution")) +
+layer(stat = "function",
+geom = "path",
+position = "identity",
+params = list(
+fun = dnorm,
+args = list(mean = df_$y, sd = proposal_sd),
+xlim = c(-3, 3)),
+mapping = aes(color = "Proposal Distribution")) +
+scale_color_manual(values = c("forestgreen", "royalblue")) +
+labs(x = "Quantiles", y = "Densities", color = "Distribution") +
+theme(legend.position = "top")
+plt <- gridExtra::arrangeGrob(p1, p2, p3,
+layout_matrix = matrix(c(1, 2, 3), 3, 1, byrow = TRUE))
+grid::grid.newpage()
+grid::grid.draw(plt)
+}
+dev.off()
+system("ffmpeg -y -r 2 -i ~/Desktop/Test/MHplot%03d.png -c:v libx264 -r 30 -pix_fmt yuv420p ~/Desktop/Test/MHplot.mp4")
+# system("rm ~/Desktop/Test/*.png")
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-ggvis.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-ggvis.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-ggvis.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-ggvis.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-ggvis.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-ggvis.R', echo=TRUE)
+cat("Plot Number:", i, "generated")
+# The Metropolis–Hastings algorithm thus consists in the following:
+#
+# 0. Initialise
+#   - Pick an initial state x0;
+#   - Set t=0;
+# Iterate:
+# 1. Generate: randomly generate a candidate state x_c according to g(x_c|x_t)
+# 2. Calculate: calculate the acceptance probability A(x_c, x_t) = min(1, p(x_c)/p(x_t)*g(x_c|x_t)/g(x_t|x_c))
+# 3. Accept or Reject:
+#   - generate a uniform random number u = U(0, 1)
+#   - if u <= A(x_c, x_t), accept the new state and set x_(t+1) = x_c
+#   - if u > A, reject the new state, and copy the old state forward x_(t+1) = x_t
+# 4. Increment: set t = t + 1
+library(ggplot2)
+iter <- 1000
+target_mu <- 0
+target_sd <- 1
+xc <- 1
+proposal_sd <- 1
+xc_vec <- c()
+for (i in 1:iter) {
+xi <- rnorm(1, mean = xc, sd = proposal_sd)
+pxc <- dnorm(xc, mean = target_mu, sd = target_sd)
+pxi <- dnorm(xi, mean = target_mu, sd = target_sd)
+gxc_t <- dnorm(xc, mean = xi, sd = proposal_sd)
+gxt_c <- dnorm(xi, mean = xc, sd = proposal_sd)
+accept <- min(1, pxi/pxc*gxc_t/gxt_c)
+u <- runif(1)
+xc <- if (u <= accept) xi else xc
+xc_vec[i] <- xc
+}
+df <- data.frame(x = 1:iter, y = xc_vec)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R')
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+?par
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Desktop/Test/mcmc-mh-plot.R', echo=TRUE)
+source('~/Desktop/Test/mcmc-mh-plot.R', echo=TRUE)
+source('~/Desktop/Test/mcmc-mh-plot.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+formatR::tidy_file("_scripts/MCMC-Metropolis-Visualization.R")
+formatR::tidy_file("_scripts/MCMC-Metropolis-Visualization.R")
+?tidy_file
+formatR::tidy_source()
+formatR::tidy_source(arrow = TRUE, indent = 2)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+View(plt)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R', echo=TRUE)
+layout(matrix(c(1, 3, 2), 3, 1, byrow = T))
+track, xc)  ## The chain
+xi <- rnorm(1, xc, prop_sd)  ## Candidate point
+## -- Plot Density of approaching Distribution -----------
+par(mar = c(1, 3, 1, 0))
+curve(dnorm(x, target_mu, target_sd), col = "royalblue", lty = 2, lwd = 2,
+xlim = plot_range, ylab = "Density", ylim = c(0, 0.5))
+if (i > 2) lines(density(track, adjust = 1.5), col = "forestgreen", lwd = 2)
+## -- plot the Trace -----------
+par(mar = c(3, 3, 2, 0))
+plot(1:i, track, ylim = plot_range, main = "", type = "l", ylab = "Trace",
+xlab = "Iteration")
+pi_Y <- dnorm(xi, target_mu, target_sd, log = TRUE)
+pi_X <- dnorm(xc, target_mu, target_sd, log = TRUE)
+## -- plot the target distribution and propsal distribution actions -------
+par(mar = c(1, 3, 1, 0))
+curve(dnorm(x, target_mu, target_sd), xlim = plot_range, col = "royalblue",
+lty = 2, ylab = "Metropolis-Hastings", lwd = 2, ylim = c(0, 0.5))
+curve(dnorm(x, xc, prop_sd), col = "black", add = TRUE)
+points(xi, 0, pch = 19, cex = 2, col = "forestgreen")
+segments(x0 = xi, y0 = 0, x1 = xi, y1 = 0.5, col = "forestgreen", lty = 2)
+## Accept move with a probability accept -----------
+accept <- (pi_Y) - (pi_X)
+if (accept > 0) accept <- 0
+if (log(runif(1)) <= accept) {
+xc <- xi
+## If accepted change the point and segment color to red ------------
+points(xi, 0, pch = 19, col = "red4", cex = 2)
+segments(x0 = xi, y0 = 0, x1 = xi, y1 = 0.5, col = "red4", lty = 2)
+}
+## Adapt the poposal ---------
+if (i > 100) prop_sd <- sd(track[floor(i/2):i])
+i <- 1
+track, xc)  ## The chain
+xi <- rnorm(1, xc, prop_sd)  ## Candidate point
+## -- Plot Density of approaching Distribution -----------
+par(mar = c(1, 3, 1, 0))
+curve(dnorm(x, target_mu, target_sd), col = "royalblue", lty = 2, lwd = 2,
+xlim = plot_range, ylab = "Density", ylim = c(0, 0.5))
+if (i > 2) lines(density(track, adjust = 1.5), col = "forestgreen", lwd = 2)
+## -- plot the Trace -----------
+par(mar = c(3, 3, 2, 0))
+plot(1:i, track, ylim = plot_range, main = "", type = "l", ylab = "Trace",
+xlab = "Iteration")
+pi_Y <- dnorm(xi, target_mu, target_sd, log = TRUE)
+pi_X <- dnorm(xc, target_mu, target_sd, log = TRUE)
+## -- plot the target distribution and propsal distribution actions -------
+par(mar = c(1, 3, 1, 0))
+curve(dnorm(x, target_mu, target_sd), xlim = plot_range, col = "royalblue",
+lty = 2, ylab = "Metropolis-Hastings", lwd = 2, ylim = c(0, 0.5))
+curve(dnorm(x, xc, prop_sd), col = "black", add = TRUE)
+points(xi, 0, pch = 19, cex = 2, col = "forestgreen")
+segments(x0 = xi, y0 = 0, x1 = xi, y1 = 0.5, col = "forestgreen", lty = 2)
+## Accept move with a probability accept -----------
+accept <- (pi_Y) - (pi_X)
+if (accept > 0) accept <- 0
+if (log(runif(1)) <= accept) {
+xc <- xi
+## If accepted change the point and segment color to red ------------
+points(xi, 0, pch = 19, col = "red4", cex = 2)
+segments(x0 = xi, y0 = 0, x1 = xi, y1 = 0.5, col = "red4", lty = 2)
+}
+## Adapt the poposal ---------
+if (i > 100) prop_sd <- sd(track[floor(i/2):i])
+track, xc)  ## The chain
+xi <- rnorm(1, xc, prop_sd)  ## Candidate point
+## -- Plot Density of approaching Distribution -----------
+par(mar = c(1, 3, 1, 0))
+curve(dnorm(x, target_mu, target_sd), col = "royalblue", lty = 2, lwd = 2,
+xlim = plot_range, ylab = "Density", ylim = c(0, 0.5))
+if (i > 2) lines(density(track, adjust = 1.5), col = "forestgreen", lwd = 2)
+## -- plot the Trace -----------
+par(mar = c(3, 3, 2, 0))
+plot(1:i, track, ylim = plot_range, main = "", type = "l", ylab = "Trace",
+xlab = "Iteration")
+pi_Y <- dnorm(xi, target_mu, target_sd, log = TRUE)
+pi_X <- dnorm(xc, target_mu, target_sd, log = TRUE)
+## -- plot the target distribution and propsal distribution actions -------
+par(mar = c(1, 3, 1, 0))
+curve(dnorm(x, target_mu, target_sd), xlim = plot_range, col = "royalblue",
+lty = 2, ylab = "Metropolis-Hastings", lwd = 2, ylim = c(0, 0.5))
+curve(dnorm(x, xc, prop_sd), col = "black", add = TRUE)
+points(xi, 0, pch = 19, cex = 2, col = "forestgreen")
+segments(x0 = xi, y0 = 0, x1 = xi, y1 = 0.5, col = "forestgreen", lty = 2)
+## Accept move with a probability accept -----------
+accept <- (pi_Y) - (pi_X)
+if (accept > 0) accept <- 0
+if (log(runif(1)) <= accept) {
+xc <- xi
+## If accepted change the point and segment color to red ------------
+points(xi, 0, pch = 19, col = "red4", cex = 2)
+segments(x0 = xi, y0 = 0, x1 = xi, y1 = 0.5, col = "red4", lty = 2)
+}
+## Adapt the poposal ---------
+if (i > 100) prop_sd <- sd(track[floor(i/2):i])
+i <- 3
+track, xc)  ## The chain
+xi <- rnorm(1, xc, prop_sd)  ## Candidate point
+## -- Plot Density of approaching Distribution -----------
+par(mar = c(1, 3, 1, 0))
+curve(dnorm(x, target_mu, target_sd), col = "royalblue", lty = 2, lwd = 2,
+xlim = plot_range, ylab = "Density", ylim = c(0, 0.5))
+if (i > 2) lines(density(track, adjust = 1.5), col = "forestgreen", lwd = 2)
+## -- plot the Trace -----------
+par(mar = c(3, 3, 2, 0))
+plot(1:i, track, ylim = plot_range, main = "", type = "l", ylab = "Trace",
+xlab = "Iteration")
+pi_Y <- dnorm(xi, target_mu, target_sd, log = TRUE)
+pi_X <- dnorm(xc, target_mu, target_sd, log = TRUE)
+## -- plot the target distribution and propsal distribution actions -------
+par(mar = c(1, 3, 1, 0))
+curve(dnorm(x, target_mu, target_sd), xlim = plot_range, col = "royalblue",
+lty = 2, ylab = "Metropolis-Hastings", lwd = 2, ylim = c(0, 0.5))
+curve(dnorm(x, xc, prop_sd), col = "black", add = TRUE)
+points(xi, 0, pch = 19, cex = 2, col = "forestgreen")
+segments(x0 = xi, y0 = 0, x1 = xi, y1 = 0.5, col = "forestgreen", lty = 2)
+## Accept move with a probability accept -----------
+accept <- (pi_Y) - (pi_X)
+if (accept > 0) accept <- 0
+if (log(runif(1)) <= accept) {
+xc <- xi
+## If accepted change the point and segment color to red ------------
+points(xi, 0, pch = 19, col = "red4", cex = 2)
+segments(x0 = xi, y0 = 0, x1 = xi, y1 = 0.5, col = "red4", lty = 2)
+}
+## Adapt the poposal ---------
+if (i > 100) prop_sd <- sd(track[floor(i/2):i])
+par(mgp = c(1.8, 0.5, 0), bty = "n")
+layout(matrix(c(1, 3, 2), 3, 1, byrow = T))
+rm(list = ls())
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis-Visualization.R')
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/Real-vs-Simulated.R', echo=TRUE)
+summary(mdl)
+nobs <- nrow(dta) # Number of cars
+beta0 <- round(coef(mdl)[1], 2) # Price of new car
+beta1 <- round(coef(mdl)[2], 2) # Decrease in price due to increase of milage by 1000Km
+sigma <- 3 # Variation in price in general
+mu_x <- round(mean(dta$Mileage)) # Average Mileage
+sigma_x <- round(sd(dta$Mileage), 2) # Mileage Variation
+mileage <- abs(rnorm(nobs, mu_x, sigma_x))
+price <- beta0 + beta1 * mileage + rnorm(nobs, 0, sigma)
+mdl_sim <- lm(price ~ mileage)
+df <- tibble(
+cars = 1:nobs,
+mileage = mileage,
+price = price,
+fitted = mdl_sim$fitted
+)
+plt_sim <- ggplot(df, aes(mileage, price)) +
+geom_segment(aes(yend = fitted, xend = mileage), size = 0.25,
+linetype = "dashed", color = "red1") +
+geom_point(shape = 21, fill = "lightgrey", size = 0.8) +
+geom_smooth(method = "lm", se = FALSE, color = "darkgrey") +
+geom_point(aes(y = fitted), shape = 4, size = 0.5) +
+ggpubr::stat_regline_equation(label.x.npc = 0.7, label.y.npc = 0.95, size = 6.5) +
+ggpubr::stat_cor(label.x.npc = 0.7, label.y.npc = 0.9, output.type = "text", size = 6.5) +
+labs(x = "Mileage (In Thousands of Miles)", y = "Price (In Thousands of Dollars)") +
+ggtitle("Simulated data with controlled regression coefficients and model variance",
+subtitle = as.expression(bquote(
+"Controlled Values: "~
+n == .(nobs)~", "~
+beta[0] == .(beta0)~", "~
+beta[1] == .(beta1)~", "~
+sigma == .(sigma)~", "~
+mu[x] == .(mu_x)~", "~
+sigma[x] == .(sigma_x)
+)))
+gridExtra::grid.arrange(plt_real, plt_sim, ncol = 2)
+# ggsave(plt_real, filename = "_images/real.svg", width = 7, height = 7)
+# ggsave(plt_sim, filename = "_images/sim.svg", width = 7, height = 7)
+df
+source('~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/Real-vs-Simulated.R', echo=TRUE)

@@ -1,0 +1,4 @@
+target_dist <- function(x) {
+  x^2 + 3*x + 6
+}
+

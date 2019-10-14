@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1569123198311.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "690678763",
+    "id" : "8A74B9AC",
+    "lastKnownWriteTime" : 1569148432,
+    "last_content_update" : 1569148432134,
+    "path" : "/Data/Dropbox/Talks/Trial-Lecture/_scripts/clock.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "37,23",
+        "marks" : "<:37,22\n>:37,23",
+        "scrollLine" : "34",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

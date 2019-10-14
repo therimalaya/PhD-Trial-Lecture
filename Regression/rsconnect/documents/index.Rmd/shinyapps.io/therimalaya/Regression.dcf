@@ -1,0 +1,12 @@
+name: Regression
+title: Regression
+username:
+account: therimalaya
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1216876
+bundleId: 2427669
+url: https://therimalaya.shinyapps.io/regression/
+when: 1568924740.19892
+asMultiple: FALSE
+asStatic: FALSE

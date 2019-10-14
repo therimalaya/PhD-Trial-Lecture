@@ -1,0 +1,25 @@
+{
+    "id": "F43D828F",
+    "path": "~/Dropbox (Personal)/Talks/Trial-Lecture/_scripts/MCMC-Metropolis.R",
+    "project_path": "_scripts/MCMC-Metropolis.R",
+    "type": "r_source",
+    "hash": "4028575911",
+    "contents": "",
+    "dirty": false,
+    "created": 1568108179973.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "cursorPosition": "3,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1568108425,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1568108425952,
+    "read_only": false,
+    "read_only_alternatives": []
+}
